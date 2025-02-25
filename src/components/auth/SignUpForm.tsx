@@ -8,21 +8,36 @@ import Checkbox from '@/components/form/checkbox/Checkbox'
 import Button from '@/components/button/Button'
 import Input from '@/components/form/input/Input'
 
-const SignInForm = (): React.ReactElement => {
+const SignUpForm = (): React.ReactElement => {
 
   const [showPassword, setShowPassword] = useState(false)
   const [isChecked, setIsChecked] = useState(false);
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
+      <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+        >
+          {/* <ChevronLeftIcon /> */}
+          <Image
+            height={20}
+            width={20}
+            alt='Back'
+            src={"../../images/chevronLeftIcon.svg"}
+          />
+          Back to Sign In
+        </Link>
+      </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="text-4xl mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign In
+              Sign Up
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              Enter your email and password to sign up!
             </p>
           </div>
           <div>
@@ -78,8 +93,35 @@ const SignInForm = (): React.ReactElement => {
                 </span>
               </div>
             </div>
-            <form action={"/dashboard"}>
+            <form>
               <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  {/* <!-- First Name --> */}
+                  <div className="sm:col-span-1">
+                    <Label>
+                      First Name<span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="fname"
+                      name="fname"
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  {/* <!-- Last Name --> */}
+                  <div className="sm:col-span-1">
+                    <Label>
+                      Last Name<span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="lname"
+                      name="lname"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <Label>
                     Email <span className="text-red-500">*</span>{" "}
@@ -117,23 +159,26 @@ const SignInForm = (): React.ReactElement => {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Checkbox checked={isChecked} onChange={setIsChecked} />
-                    <span className="block font-normal text-sm text-gray-700 text-theme-sm dark:text-gray-400">
-                      Keep me logged in
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    className="w-5 h-5"
+                    checked={isChecked}
+                    onChange={setIsChecked}
+                  />
+                  <p className="inline-block text-sm font-normal text-gray-500 dark:text-gray-400">
+                    By creating an account means you agree to the{" "}
+                    <span className="text-gray-800 dark:text-white/90">
+                      Terms and Conditions,
+                    </span>{" "}
+                    and our{" "}
+                    <span className="text-gray-800 dark:text-white">
+                      Privacy Policy
                     </span>
-                  </div>
-                  <Link
-                    href="/forgotpassword"
-                    className="text-sm text-yellow-500 hover:text-yellow-600 dark:text-yellow-400"
-                  >
-                    Forgot password?
-                  </Link>
+                  </p>
                 </div>
                 <div>
                   <Button className="w-full" size="sm" variant="primary">
-                    Sign in
+                    Sign Up
                   </Button>
                 </div>
               </div>
@@ -141,12 +186,12 @@ const SignInForm = (): React.ReactElement => {
 
             <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                Don&apos;t have an account? {""}
+                Already have an account? {""}
                 <Link
-                  href="/signup"
+                  href="/signin"
                   className="text-yellow-500 hover:text-yellow-600 dark:text-yellow-400"
                 >
-                  Sign Up
+                  Sign In
                 </Link>
               </p>
             </div>
@@ -157,4 +202,4 @@ const SignInForm = (): React.ReactElement => {
   )
 }
 
-export default SignInForm
+export default SignUpForm
