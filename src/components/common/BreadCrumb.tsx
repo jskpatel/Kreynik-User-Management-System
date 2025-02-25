@@ -8,7 +8,7 @@ interface BreadCrumbProps {
 const BreadCrumb:React.FC<BreadCrumbProps> = ({pageTitle}) => {
   return (
     <div className='flex flex-wrap items-center justify-between gap-3 mb-6'>
-      <h2 className='text-xl font-semibold text-gray-800' x-text="pageName">
+      <h2 className='text-xl font-semibold text-white' x-text="pageName">
         {pageTitle}
       </h2>
 
@@ -38,7 +38,7 @@ const BreadCrumb:React.FC<BreadCrumbProps> = ({pageTitle}) => {
               </svg>
             </Link>
           </li>
-          <li className='text-sm text-gray-400'>
+          <li className='text-sm text-white'>
             {pageTitle}
           </li>
         </ol>
