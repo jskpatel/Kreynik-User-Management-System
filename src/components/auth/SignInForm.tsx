@@ -7,11 +7,20 @@ import Label from '@/components/form/label/Label'
 import Checkbox from '@/components/form/checkbox/Checkbox'
 import Button from '@/components/button/Button'
 import Input from '@/components/form/input/Input'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/lib/store'
 
 const SignInForm = (): React.ReactElement => {
 
+  const {email, password, loading} = useSelector((state: RootState) => state.login)
+  console.log({email, password, loading})
+
   const [showPassword, setShowPassword] = useState(false)
   const [isChecked, setIsChecked] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  }
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
@@ -78,13 +87,13 @@ const SignInForm = (): React.ReactElement => {
                 </span>
               </div>
             </div>
-            <form action={"/dashboard"}>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Email <span className="text-red-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" />
+                  <Input placeholder="info@gmail.com" type="email" name='email' />
                 </div>
                 <div>
                   <Label>
@@ -94,6 +103,7 @@ const SignInForm = (): React.ReactElement => {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      name="password"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}

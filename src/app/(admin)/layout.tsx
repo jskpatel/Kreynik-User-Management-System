@@ -3,7 +3,7 @@
 import { useSidebar } from '@/context/SidebarContext'
 import AppHeader from '@/layouts/AppHeader'
 import AppSidebar from '@/layouts/AppSidebar'
-import Backdrop from '@/layouts/Backdrop'
+// import Backdrop from '@/layouts/Backdrop'
 import React from 'react'
 
 interface AdminLayoutProps {
@@ -19,7 +19,7 @@ const AdminLayout:React.FC<AdminLayoutProps> = ({children}) => {
   return (
     <div className="min-h-screen xl:flex bg-gray-900">
       <AppSidebar />
-      <Backdrop />
+      {/* <Backdrop /> */}
 
       <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
         <div className="py-4 mx-auto max-w-screen-2xl md:py-6">

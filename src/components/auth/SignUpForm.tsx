@@ -96,7 +96,6 @@ const SignUpForm = (): React.ReactElement => {
             <form>
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {/* <!-- First Name --> */}
                   <div className="sm:col-span-1">
                     <Label>
                       First Name<span className="text-red-500">*</span>
@@ -108,7 +107,6 @@ const SignUpForm = (): React.ReactElement => {
                       placeholder="Enter your first name"
                     />
                   </div>
-                  {/* <!-- Last Name --> */}
                   <div className="sm:col-span-1">
                     <Label>
                       Last Name<span className="text-red-500">*</span>
@@ -126,7 +124,7 @@ const SignUpForm = (): React.ReactElement => {
                   <Label>
                     Email <span className="text-red-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" />
+                  <Input placeholder="info@gmail.com" type="email" name="email" />
                 </div>
                 <div>
                   <Label>
@@ -136,6 +134,7 @@ const SignUpForm = (): React.ReactElement => {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      name="password"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
