@@ -38,7 +38,7 @@ export const getUser = createAsyncThunk(
   "user/get", async (payload: string) => {
 
     const response = await axios.get(`/api/users?email=${payload}`);
-    return response.data
+    return response.data.data
   }
 )
 

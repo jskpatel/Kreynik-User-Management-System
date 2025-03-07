@@ -11,7 +11,7 @@ const AppHeader = () => {
           <Image
             width={100}
             height={28}
-            src="./images/logo.svg"
+            src="/images/logo.svg"
             alt='Kreynik User Management System'
           />
           Kreynik User Management System

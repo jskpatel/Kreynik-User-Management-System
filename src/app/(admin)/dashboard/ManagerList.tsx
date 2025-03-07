@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaPencil, FaTrashCan, FaBookOpenReader } from "react-icons/fa6";
 import { UserDetails } from '@/lib/slices/LoginSlice';
+import Link from 'next/link';
 
 interface ManagerListProps {
   data: UserDetails[]
@@ -33,7 +34,7 @@ const ManagerList: React.FC<ManagerListProps> = ({data, onDelete}) => {
                     <td className="px-5 py-4 sm:px-6 text-start">{user.age}</td>
                     <td className="px-5 py-4 sm:px-6 text-start capitalize">{user.type}</td>
                     <td className="px-5 py-4 sm:px-6 text-start flex gap-3">
-                      <span><FaBookOpenReader /></span>
+                      <Link href={`/dashboard/${user.email}`}><FaBookOpenReader /></Link>
                       <span><FaPencil /></span>
                       <span onClick={() => onDelete(user.email)}><FaTrashCan /></span>
                     </td>
