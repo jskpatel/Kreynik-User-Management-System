@@ -7,11 +7,27 @@ import Label from '@/components/form/label/Label'
 import Checkbox from '@/components/form/checkbox/Checkbox'
 import Button from '@/components/button/Button'
 import Input from '@/components/form/input/Input'
+import { signUpFormFields, UserType } from './constant'
+import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { createUser } from '@/lib/slices/UserSlice'
+import Select from '../form/select/Select'
 
 const SignUpForm = (): React.ReactElement => {
 
+  const dispatch = useAppDispatch()
+
+  const [formData, setFormData] = useState(signUpFormFields)
   const [showPassword, setShowPassword] = useState(false)
   const [isChecked, setIsChecked] = useState(false);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(createUser(formData))
+  }
+
+  const handleSelectChange = (value: "admin" | "manager" | "employee") => {
+    setFormData((prev) => ({...prev, type: value}))
+  };
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
@@ -93,7 +109,7 @@ const SignUpForm = (): React.ReactElement => {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div className="sm:col-span-1">
@@ -105,6 +121,8 @@ const SignUpForm = (): React.ReactElement => {
                       id="fname"
                       name="fname"
                       placeholder="Enter your first name"
+                      value={formData.fname}
+                      onChange={e => setFormData({...formData, fname: e.target.value})}
                     />
                   </div>
                   <div className="sm:col-span-1">
@@ -116,16 +134,47 @@ const SignUpForm = (): React.ReactElement => {
                       id="lname"
                       name="lname"
                       placeholder="Enter your last name"
+                      value={formData.lname}
+                      onChange={e => setFormData({...formData, lname: e.target.value})}
                     />
                   </div>
                 </div>
 
                 <div>
                   <Label>
-                    Email <span className="text-red-500">*</span>{" "}
+                    User Type <span className="text-red-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" name="email" />
+                  <Select
+                    options={UserType}
+                    placeholder="Select Type"
+                    onChange={handleSelectChange}
+                    className="bg-dark-900"
+                  />
                 </div>
+
+
+                <div>
+                  <Label>Email <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="info@gmail.com"
+                      type="text"
+                      className="pl-[62px]"
+                      name="email"
+                      value={formData.email}
+                      onChange={e => setFormData({...formData, email: e.target.value})}
+                    />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                      <Image
+                        height={20}
+                        width={20}
+                        alt=''
+                        src={"../../images/envelopeIcon.svg"}
+                      />
+                    </span>
+                  </div>
+                </div>
+
                 <div>
                   <Label>
                     Password <span className="text-red-500">*</span>{" "}
@@ -135,6 +184,8 @@ const SignUpForm = (): React.ReactElement => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       name="password"
+                      value={formData.password}
+                      onChange={e => setFormData({...formData, password: e.target.value})}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -158,6 +209,7 @@ const SignUpForm = (): React.ReactElement => {
                     </span>
                   </div>
                 </div>
+
                 <div className="flex items-center gap-3">
                   <Checkbox
                     className="w-5 h-5"
@@ -175,6 +227,7 @@ const SignUpForm = (): React.ReactElement => {
                     </span>
                   </p>
                 </div>
+
                 <div>
                   <Button className="w-full" size="sm" variant="primary">
                     Sign Up

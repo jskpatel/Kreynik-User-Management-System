@@ -1,26 +1,59 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Label from '@/components/form/label/Label'
 import Checkbox from '@/components/form/checkbox/Checkbox'
 import Button from '@/components/button/Button'
 import Input from '@/components/form/input/Input'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/lib/store'
+// import { useSelector } from 'react-redux'
+import { AppDispatch } from '@/lib/store'
+import { getUser, setError, setLoading, userLogin } from '@/lib/slices/LoginSlice'
+import { useDispatch } from 'react-redux'
 
 const SignInForm = (): React.ReactElement => {
 
-  const {email, password, loading} = useSelector((state: RootState) => state.login)
-  console.log({email, password, loading})
+  const dispatch = useDispatch<AppDispatch>();
+  // const {user} = useSelector((state: RootState) => state.login)
+  // console.log("01 ", {user})
 
   const [showPassword, setShowPassword] = useState(false)
   const [isChecked, setIsChecked] = useState(false);
+  const [email, setEmail] = useState("k@kreynik.com")
+  const [password, setPassword] = useState("k@2015")
+
+  interface Payload {
+    email: string,
+    password: string
+  }
+
+  useEffect(()=> {
+    dispatch(getUser("k@kreynik.com"))
+  }, [dispatch])
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    dispatch(setLoading(true))
+    dispatch(setError(""))
+
+    const payload: Payload = {
+      email: "k@kreynik.com",
+      password: "k@2015"
+    }
+
+    try {
+      const response = dispatch(userLogin(payload)).unwrap()
+      console.log("001 FoRM>> ", response)
+      
+    } catch (error) {
+      console.error("FE: Login failed:", error)
+    }
   }
+
+
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
@@ -93,7 +126,13 @@ const SignInForm = (): React.ReactElement => {
                   <Label>
                     Email <span className="text-red-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" name='email' />
+                  <Input
+                    placeholder="info@gmail.com"
+                    type="email"
+                    name='email'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label>
@@ -104,6 +143,8 @@ const SignInForm = (): React.ReactElement => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       name="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
