@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 
-export interface UserLoginPayload {
+export interface LoginPayload {
   email: string;
   password: string;
 }
@@ -15,7 +16,7 @@ export interface UserDetails {
 }
 
 export interface InitialState {
-  user: UserLoginPayload,
+  user: LoginPayload,
   userDetails: UserDetails,
   loading: boolean,
   error: null
@@ -38,55 +39,49 @@ const initialState: InitialState = {
   error: null
 }
 
-
 export const userLogin = createAsyncThunk(
-  "auth/login",
-  async ( payload: UserLoginPayload, {rejectWithValue} ) => {
+  "auth/login", async (payload: LoginPayload, { rejectWithValue }) => {
     try {
-      const response = await fetch("/api/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }
-      );
 
-      if(!response.ok){
-        const errorData = await response.json();
-        return rejectWithValue(errorData)
-      }
+      const response = await axios.post("/api/login", payload)
+      // const response = await axios.post("/api/login", {email: "n@kreynik.com", password:"$2b$10$AIeMWcaGsW3bbVCbg8VpmOsU/OfUeSkYjOTqvg3eIyEdWfD3FW2fK"})
 
-      return response.json()
-      
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return response.data
+
+      // console.log("LOGIN RESPONSE >> ", response)
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return rejectWithValue("Network error")
     }
   }
 )
 
-export const getUser = createAsyncThunk(
-  "getUser", async (payload: string, {rejectWithValue}) => {
-    try {
-      const response = await fetch("/api/getUser", {
-        method: "GET",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload)
-      });
+// export const userLogin = createAsyncThunk(
+//   "auth/login",
+//   async ( payload: UserLoginPayload, {rejectWithValue} ) => {
+//     try {
+//       const response = await axios.post("/api/login",
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify(payload)
+//         }
+//       );
 
-      if(!response.ok){
-        const errorData = await response.json();
-        return rejectWithValue(errorData)
-      }
-      
-      return response.json();
+//       if(!response.ok){
+//         const errorData = await response.json();
+//         return rejectWithValue(errorData)
+//       }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      return rejectWithValue("Network error")
-    }
-  }
-)
+//       return response
+
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     } catch (error) {
+//       return rejectWithValue("Network error")
+//     }
+//   }
+// )
 
 const LoginSlice = createSlice({
   name: "login",
@@ -101,15 +96,11 @@ const LoginSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(userLogin.fulfilled, (state, action: PayloadAction<UserLoginPayload>) => {
+      .addCase(userLogin.fulfilled, (state, action: PayloadAction<LoginPayload>) => {
         state.user = action.payload
-      })
-
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.userDetails = action.payload
       })
   }
 })
 
-export const {setLoading, setError} = LoginSlice.actions;
+export const { setLoading, setError } = LoginSlice.actions;
 export default LoginSlice.reducer;

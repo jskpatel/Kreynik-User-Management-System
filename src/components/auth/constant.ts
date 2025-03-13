@@ -30,3 +30,10 @@ export const UserType: UserType[] = [
   { value: UserTypes.manager, label: "Manager" },
   { value: UserTypes.employee, label: "Employee" },
 ];
+
+
+// Initial values
+export const INITS = {
+  page: 1,
+  limit: 10,
+}

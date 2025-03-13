@@ -10,20 +10,45 @@ interface User {
   type: "admin" | "manager" | "employee"
 }
 
+export interface Meta {
+  currentPage: number,
+  lastPage: number,
+  totalPage: number,
+  perPage: number,
+  totalData: number
+}
 interface InitialState {
   loading: boolean,
   user: User | null,
   allUsers: User[] | null,
-  error: boolean | null,
+  error: string | null,
   toast: string;
+  meta: Meta;
+  userFilter: string
 }
 
+export const meta: Meta = {
+  currentPage: 1,
+  lastPage: 1,
+  totalPage: 1,
+  perPage: 5,
+  totalData: 1
+}
 const initialState: InitialState = {
   loading: false,
   user: null,
   allUsers: null,
   error: null,
-  toast: ""
+  toast: "",
+  meta,
+  userFilter: ""
+}
+
+interface Query {
+  page?: number;
+  limit?: number;
+  email?: string;
+  filter?: string | null;
 }
 
 export const createUser = createAsyncThunk(
@@ -35,18 +60,18 @@ export const createUser = createAsyncThunk(
 )
 
 export const getUser = createAsyncThunk(
-  "user/get", async (payload: string) => {
+  "user/get", async (email: string) => {
 
-    const response = await axios.get(`/api/users?email=${payload}`);
+    const response = await axios.get(`/api/users?email=${email}`);
     return response.data.data
   }
 )
 
 export const getAllUser = createAsyncThunk(
-  "user/getAll", async () => {
+  "user/getAll", async (payload: Query) => {
 
-    const response = await axios.get<{data: User[]}>(`/api/users`);
-    return response.data.data
+    const response = await axios.get<{ data: User[] }>(`/api/users?page=${payload.page}&limit=${payload.limit || meta.perPage}${payload.filter !== "" ? "&type="+payload.filter : ""}`);
+    return response.data
   }
 )
 
@@ -76,7 +101,13 @@ const userSlice = createSlice({
     },
     setToast: (state, action) => {
       state.toast = action.payload
-    }
+    },
+    setResetMeta: (state) => {
+      state.meta = meta
+    },
+    setUserFilter: (state, action) => {
+      state.userFilter = action.payload
+    },
   },
   extraReducers(builder) {
     builder
@@ -89,9 +120,10 @@ const userSlice = createSlice({
         state.user = action.payload;
       })
 
-      .addCase(getAllUser.fulfilled, (state, action: PayloadAction<User[]>) => {
+      .addCase(getAllUser.fulfilled, (state, action: PayloadAction<{data: User[]; meta: Meta}>) => {
         state.loading = false;
-        state.allUsers = action.payload;
+        state.allUsers = action.payload.data;
+        state.meta = action.payload.meta
       })
 
       .addCase(deleteUser.fulfilled, (state) => {
@@ -101,5 +133,5 @@ const userSlice = createSlice({
   },
 })
 
-export const {setLoading, setUser, setAllUsers, setError, setToast} = userSlice.actions
+export const { setLoading, setUser, setAllUsers, setError, setToast, setResetMeta, setUserFilter } = userSlice.actions
 export default userSlice.reducer

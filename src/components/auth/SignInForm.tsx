@@ -1,59 +1,46 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import Link from 'next/link'
 import Image from 'next/image'
+
 import Label from '@/components/form/label/Label'
 import Checkbox from '@/components/form/checkbox/Checkbox'
 import Button from '@/components/button/Button'
 import Input from '@/components/form/input/Input'
-// import { useSelector } from 'react-redux'
 import { AppDispatch } from '@/lib/store'
-import { getUser, setError, setLoading, userLogin } from '@/lib/slices/LoginSlice'
-import { useDispatch } from 'react-redux'
+import { userLogin } from '@/lib/slices/LoginSlice'
+
+interface Payload {
+  email: string,
+  password: string
+}
 
 const SignInForm = (): React.ReactElement => {
 
   const dispatch = useDispatch<AppDispatch>();
-  // const {user} = useSelector((state: RootState) => state.login)
-  // console.log("01 ", {user})
 
   const [showPassword, setShowPassword] = useState(false)
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("k@kreynik.com")
   const [password, setPassword] = useState("k@2015")
-
-  interface Payload {
-    email: string,
-    password: string
-  }
-
-  useEffect(()=> {
-    dispatch(getUser("k@kreynik.com"))
-  }, [dispatch])
-
+  // const [password, setPassword] = useState("n@2023")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    dispatch(setLoading(true))
-    dispatch(setError(""))
-
     const payload: Payload = {
-      email: "k@kreynik.com",
-      password: "k@2015"
+      email,
+      password
     }
 
     try {
-      const response = dispatch(userLogin(payload)).unwrap()
-      console.log("001 FoRM>> ", response)
-      
+      dispatch(userLogin(payload)).unwrap()
     } catch (error) {
       console.error("FE: Login failed:", error)
     }
   }
-
-
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">

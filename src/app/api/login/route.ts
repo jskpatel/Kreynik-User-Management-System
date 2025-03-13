@@ -2,32 +2,9 @@ import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import bcrypt from 'bcrypt'
 
 const SECRET_KEY = process.env.JWT_SECRET as string;
-
-// export const GET = async (req: Request) => {
-//   try {
-//     await connectToDatabase();
-
-//     const url = new URL(req.url)
-//     const email = url.searchParams.get("email");
-
-//     if (!email) {
-//       return NextResponse.json({ success: false, error: "Email is required" }, { status: 400 })
-//     }
-
-//     const user = await User.findOne({ email })
-//     if (!user) {
-//       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
-//     }
-
-//     return NextResponse.json({ success: true, data: user }, { status: 200 })
-
-//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//   } catch (error) {
-//     return NextResponse.json({ success: false, error: "Error fetching user" }, { status: 500 })
-//   }
-// }
 
 export const POST = async (req: Request) => {
   try {
@@ -35,21 +12,35 @@ export const POST = async (req: Request) => {
     await connectToDatabase();
 
     const { email, password } = await req.json();
+    // const email= "n@kreynik.com";
+    // const password= "$2b$10$AIeMWcaGsW3bbVCbg8VpmOsU/OfUeSkYjOTqvg3eIyEdWfD3FW2fK"
+
+    console.log({ email, password })
 
     if (!email || !password) {
       return NextResponse.json({ success: false, error: "Email and password are required" }, { status: 400 })
     }
 
+    console.log({ one: 1 })
+
     const user = await User.findOne({ email })
-    console.log("login user ==> ", user)
-    if (!user) {
+    console.log({ user })
+    if (user.email !== email) {
       return NextResponse.json({ success: false, error: "Email: Invalid email or password" }, { status: 401 })
     }
 
-    const isMatch = await user.comparePassword(password)
+    // const isMatch = await user.comparePassword(password);
+    // console.log({ isMatch })
+    // if (!isMatch) {
+    //   return NextResponse.json({ success: false, error: "PWD: Invalid email or password" }, { status: 401 })
+    // }
+
+    console.log("password ==>> ", password, user.password)
+    const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return NextResponse.json({ success: false, error: "PWD: Invalid email or password" }, { status: 401 })
     }
+    console.log("=======isMatch======", { isMatch })
 
     const token = jwt.sign(
       {
@@ -59,11 +50,19 @@ export const POST = async (req: Request) => {
       },
       SECRET_KEY,
       {
-        expiresIn: "1d"
+        expiresIn: "1h"
       }
     )
 
-    return NextResponse.json({ success: true, token }, { status: 200 })
+    const response = NextResponse.json({ success: true, token }, { status: 200 })
+
+    response.cookies.set("token", token, {
+      httpOnly: false,
+      // sameSite: "lax",
+      path: "/"
+    })
+
+    return response
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {

@@ -1,45 +1,51 @@
 'use client'
 
-import BreadCrumb from '@/components/common/BreadCrumb'
-import React, { useEffect, useState } from 'react'
-import ComponentCard from '@/components/common/ComponentCard'
-import { useAppDispatch } from '@/hooks/useAppDispatch'
-import { deleteUser, getAllUser } from '@/lib/slices/UserSlice'
+import React, { useCallback, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '@/lib/store'
-import { UserDetails } from '@/lib/slices/LoginSlice'
 
-import AdminList from './AdminList'
-import ManagerList from './ManagerList'
-import EmployeeList from './EmployeeList'
-import { UserTypes } from '@/components/auth/constant'
+import BreadCrumb from '@/components/common/BreadCrumb'
+import ComponentCard from '@/components/common/ComponentCard'
+import UserList from './UserList'
+import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { deleteUser, getAllUser, setUserFilter } from '@/lib/slices/UserSlice'
+import { RootState } from '@/lib/store'
+import { INITS, UserType } from '@/components/auth/constant'
 
 const Dashboard: React.FC = () => {
 
   const dispatch = useAppDispatch();
-  const allUsers = useSelector((state: RootState) => state.user.allUsers)
-
-  const [adminData, setAdminData] = useState<UserDetails[]>([]);
-  const [managerData, setManagerData] = useState<UserDetails[]>([]);
-  const [employeeData, setEmployeeData] = useState<UserDetails[]>([]);
+  const {allUsers: users, meta, userFilter} = useSelector((state: RootState) => state.user)
 
   useEffect(() => {
-    dispatch(getAllUser())
+    dispatch(getAllUser({page: INITS.page, limit: INITS.limit}))
   }, [dispatch])
 
+
+  const handleUserFilter = useCallback(() => {
+    if(userFilter !== null && userFilter !== undefined) dispatch(getAllUser({page: meta.currentPage, limit: INITS.limit, filter: userFilter}))
+  }, [dispatch, meta.currentPage, userFilter])
+
   useEffect(() => {
-    if (Array.isArray(allUsers) && allUsers.length > 0) {
-      const admins = allUsers?.filter(user => user.type === UserTypes.admin)
-      const managers = allUsers?.filter(user => user.type === UserTypes.manager)
-      const employees = allUsers?.filter(user => user.type === UserTypes.employee)
-      setAdminData(admins)
-      setManagerData(managers)
-      setEmployeeData(employees)
-    }
-  }, [allUsers])
+    handleUserFilter()
+  }, [handleUserFilter])
 
   const handleDelete = (email: string) => {
     dispatch(deleteUser(email))
+  }
+
+  const handleSelect = useCallback((value: string) => {
+    dispatch(setUserFilter(value))
+  }, [dispatch]);
+
+  const handleReset = useCallback(() => {
+    dispatch(setUserFilter(""))
+    dispatch(getAllUser({page: INITS.page, limit: INITS.limit}))
+  }, [dispatch]);
+
+  const filterProps = {
+    onChange: handleSelect,
+    option: UserType,
+    onReset: handleReset
   }
 
   return (
@@ -47,20 +53,13 @@ const Dashboard: React.FC = () => {
       <BreadCrumb pageTitle='Dashboard' />
 
       <div className='space-y-6'>
-        <ComponentCard title='Admin List' count={adminData.length}>
-          <AdminList data={adminData} onDelete={handleDelete} />
-        </ComponentCard>
-      </div>
-
-      <div className='space-y-6 mt-6'>
-        <ComponentCard title='Manager List' count={managerData.length}>
-          <ManagerList data={managerData} onDelete={handleDelete} />
-        </ComponentCard>
-      </div>
-
-      <div className='space-y-6 mt-6'>
-        <ComponentCard title='Employee List' count={employeeData.length}>
-          <EmployeeList data={employeeData} onDelete={handleDelete} />
+        <ComponentCard
+          title='User List'
+          desc={`There are ${meta.totalData} users listed here`}
+          filter={true}
+          filterProps={filterProps}
+        >
+          <UserList data={users} onDelete={handleDelete} />
         </ComponentCard>
       </div>
     </>
